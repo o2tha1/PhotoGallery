@@ -14,9 +14,11 @@
         android:layout_marginTop="@dimen/photo_margin"
         app:autoShowKeyboard="true"
         app:defaultQueryHint="@string/search_prompt"
+        app:iconifiedByDefault="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:queryHint="@string/search_prompt" />
+        app:queryHint="@string/search_prompt"
+        app:searchIcon="@drawable/ic_search" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/search_options"
@@ -89,6 +91,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/default_title" />
 
+    <TextView
+        android:id="@+id/no_results_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/details_margin"
+        android:layout_marginTop="@dimen/details_margin"
+        android:gravity="center_horizontal"
+        android:text="@string/no_results_prompt"
+        android:textSize="@dimen/text_size_sm"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_options" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/photo_recycler"

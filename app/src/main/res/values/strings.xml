@@ -18,6 +18,7 @@
 
     <string name="default_title">Interesting Photos</string>
     <string name="default_prompt">Try searching for more or tapping a user to get more relevant photos</string>
+    <string name="no_results_prompt">There are no matches for your search</string>
 
     <string name="button_share">Share button</string>
 </resources>

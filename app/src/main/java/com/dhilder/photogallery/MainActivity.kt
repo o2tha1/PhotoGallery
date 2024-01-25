@@ -117,7 +117,16 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
             if (getPhotoResponse.photos != null) {
                 adapter = PhotoAdapter(getPhotoResponse.photos.photo, this)
                 binding.photoRecycler.adapter = adapter
+                showNoResultsPrompt(adapter.itemCount == 0)
             }
+        }
+    }
+
+    private fun showNoResultsPrompt(shouldShow: Boolean) {
+        if (shouldShow) {
+            binding.noResultsPrompt.visibility = View.VISIBLE
+        } else {
+            binding.noResultsPrompt.visibility = View.GONE
         }
     }
 
