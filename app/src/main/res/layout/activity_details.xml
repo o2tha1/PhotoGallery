@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/details_margin">
@@ -29,7 +30,7 @@
             app:layout_constraintTop_toBottomOf="@id/image_title">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <ImageView
@@ -65,7 +66,7 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/user_icon_layout"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="@dimen/user_corner_radius"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -86,14 +87,16 @@
 
             <TextView
                 android:id="@+id/user_id"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/user_margin"
+                android:layout_marginHorizontal="@dimen/user_margin"
+                android:paddingStart="@dimen/user_icon_md"
                 android:textColor="@color/accent_blue"
                 android:textSize="@dimen/text_size_md"
                 app:layout_constraintBottom_toBottomOf="@id/user_icon_layout"
-                app:layout_constraintStart_toEndOf="@id/user_icon_layout"
-                app:layout_constraintTop_toTopOf="@id/user_icon_layout" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/user_icon_layout"
+                tools:ignore="RtlSymmetry" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
