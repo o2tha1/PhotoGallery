@@ -18,4 +18,6 @@
 
     <string name="default_title">Interesting Photos</string>
     <string name="default_prompt">Try searching for more or tapping a user to get more relevant photos</string>
+
+    <string name="button_share">Share button</string>
 </resources>

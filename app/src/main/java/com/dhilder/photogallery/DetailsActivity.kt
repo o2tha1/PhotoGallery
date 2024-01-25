@@ -18,13 +18,15 @@ class DetailsActivity : AppCompatActivity() {
 
         setTitle()
         setUserId()
-        setUserOnClick()
         setDescription()
         setUploadDate()
         setTakenDate()
         setTags()
         setImage()
         setUserIcon()
+
+        setUserOnClick()
+        setShareOnClick()
     }
 
     private fun setTitle() {
@@ -83,12 +85,24 @@ class DetailsActivity : AppCompatActivity() {
     }
 
     private fun setImage() {
-        val urlL = intent.getStringExtra(MainActivity.URL_L)
-        Picasso.get().load(urlL).into(binding.imageView)
+        val url = intent.getStringExtra(MainActivity.URL_L)
+        Picasso.get().load(url).into(binding.imageView)
     }
 
     private fun setUserIcon() {
         val buddyIcons = intent.getStringExtra(MainActivity.BUDDY_ICONS)
         Picasso.get().load(buddyIcons).into(binding.userIcon)
+    }
+
+    private fun setShareOnClick() {
+        val url = intent.getStringExtra(MainActivity.URL_L)
+
+        binding.shareButton.setOnClickListener {
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.type = "text/plain"
+            shareIntent.putExtra(Intent.EXTRA_TEXT, url)
+
+            startActivity(Intent.createChooser(shareIntent, null))
+        }
     }
 }
