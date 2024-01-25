@@ -46,12 +46,12 @@ class PhotoAdapter(
                 binding.imageTag.visibility = View.GONE
             }
             binding.imageView.setOnClickListener {
-                onImageClickListener.onImageClick(itemViewModel.url_l)
+                onImageClickListener.onImageClick(itemViewModel)
             }
         }
     }
 
     interface OnImageClickListener {
-        fun onImageClick(url: String)
+        fun onImageClick(metadata: PhotoMetadata)
     }
 }

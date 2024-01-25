@@ -1,5 +1,6 @@
 package com.dhilder.photogallery
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -7,9 +8,14 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dhilder.photogallery.databinding.ActivityMainBinding
+import com.dhilder.photogallery.domain.model.PhotoMetadata
 import com.dhilder.photogallery.ui.viewmodel.PhotoViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
@@ -17,6 +23,7 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
 
     private var adapter = PhotoAdapter(emptyList(), this)
     private val viewModel: PhotoViewModel by viewModels()
+    private var lastClickedPhoto: PhotoMetadata? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +33,8 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
 
         setSearchInputListener()
         setUpRecyclerView()
-        setObserver()
+        setPhotoListObserver()
+        setPhotoInfoObserver()
     }
 
     private fun setSearchInputListener() {
@@ -55,7 +63,7 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
         binding.photoRecycler.layoutManager = layoutManager
     }
 
-    private fun setObserver() {
+    private fun setPhotoListObserver() {
         viewModel.list.observe(this) { getPhotoResponse ->
             if (getPhotoResponse.photos != null) {
                 adapter = PhotoAdapter(getPhotoResponse.photos.photo, this)
@@ -64,7 +72,48 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
         }
     }
 
-    override fun onImageClick(url: String) {
-        viewModel.photoUrl.value = url
+    private fun setPhotoInfoObserver() {
+        viewModel.info.observe(this) { response ->
+            val photoInfo = response.photo
+            val photoMetadata = lastClickedPhoto
+
+            val intent = Intent(this, DetailsActivity::class.java)
+            if (photoMetadata != null) {
+                intent.putExtra(TITLE, photoMetadata.title)
+                intent.putExtra(URL_L, photoMetadata.url_l)
+                intent.putExtra(BUDDY_ICONS, photoMetadata.getBuddyIcons())
+                intent.putExtra(TAGS, photoMetadata.tags)
+            }
+            intent.putExtra(OWNER_NAME, photoInfo.owner.username)
+            intent.putExtra(DESCRIPTION, photoInfo.description._content)
+            intent.putExtra(DATE_UPLOAD, formatDate(photoInfo.dates.posted))
+            intent.putExtra(DATE_TAKEN, photoInfo.dates.taken)
+
+            startActivity(intent)
+        }
+    }
+
+    private fun formatDate(date: String): String {
+        val datePosted = Date(TimeUnit.SECONDS.toMillis(date.toLong()))
+        val dateTemplate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        return dateTemplate.format(datePosted)
+    }
+
+    override fun onImageClick(metadata: PhotoMetadata) {
+        lifecycleScope.launch {
+            lastClickedPhoto = metadata
+            viewModel.getPhotoInfo(metadata.id)
+        }
+    }
+
+    companion object {
+        const val TITLE = "title"
+        const val URL_L = "url_l"
+        const val OWNER_NAME = "owner_name"
+        const val BUDDY_ICONS = "buddy_icons"
+        const val DESCRIPTION = "description"
+        const val DATE_UPLOAD = "date_upload"
+        const val DATE_TAKEN = "date_taken"
+        const val TAGS = "tags"
     }
 }

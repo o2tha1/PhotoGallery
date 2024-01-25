@@ -3,4 +3,9 @@
 
     <string name="search_prompt">Search…</string>
     <string name="tags">tags: %1$s</string>
+    <string name="uploaded_on">Uploaded on %1$s</string>
+    <string name="taken_on">Taken on %1$s</string>
+
+    <string name="content_description_photo">The image returned from the search</string>
+    <string name="content_description_user_icon">The user icon of the image uploader</string>
 </resources>

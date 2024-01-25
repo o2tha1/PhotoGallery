@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="details_margin">32dp</dimen>
     <dimen name="photo_margin">16dp</dimen>
     <dimen name="user_margin">8dp</dimen>
     <dimen name="photo_corner_radius">15dp</dimen>
+    <dimen name="user_corner_radius">30dp</dimen>
 
-    <dimen name="text_size">16sp</dimen>
+    <dimen name="text_size_lg">20sp</dimen>
+    <dimen name="text_size_md">18sp</dimen>
+    <dimen name="text_size_sm">16sp</dimen>
+
+    <dimen name="user_icon_md">45dp</dimen>
+    <dimen name="user_icon_sm">30dp</dimen>
 </resources>
