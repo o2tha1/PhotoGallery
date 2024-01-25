@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
     private var adapter = PhotoAdapter(emptyList(), this)
     private val viewModel: PhotoViewModel by viewModels()
     private var lastClickedPhoto: PhotoMetadata? = null
+    private var tagMode = TagMode.OR
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +32,29 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setTagMode(binding.toggleTagType.isChecked)
+
+        setTagModeListener()
         setSearchInputListener()
         setUpRecyclerView()
         setPhotoListObserver()
         setPhotoInfoObserver()
+    }
+
+    private fun setTagModeListener() {
+        binding.toggleTagType.setOnCheckedChangeListener { _, isExclusive ->
+            setTagMode(isExclusive)
+            refreshSearch()
+        }
+    }
+
+    private fun setTagMode(isExclusive: Boolean) {
+        tagMode = if (isExclusive) TagMode.AND else TagMode.OR
+    }
+
+    private fun refreshSearch() {
+        val currentQuery = binding.searchView.query
+        binding.searchView.setQuery(currentQuery, true)
     }
 
     private fun setSearchInputListener() {
@@ -53,7 +73,7 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
 
     private fun getPhotos(searchText: String) {
         lifecycleScope.launch {
-            viewModel.getPhotos(searchText)
+            viewModel.getPhotos(searchText, tagMode.value)
         }
     }
 
@@ -107,6 +127,11 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
     }
 
     companion object {
+        private enum class TagMode(val value: String) {
+            AND("all"),
+            OR("any")
+        }
+
         const val TITLE = "title"
         const val URL_L = "url_l"
         const val OWNER_NAME = "owner_name"

@@ -19,6 +19,36 @@
         app:layout_constraintTop_toTopOf="parent"
         app:queryHint="@string/search_prompt" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/search_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/photo_margin"
+        android:layout_marginTop="@dimen/photo_margin"
+        android:layout_marginEnd="@dimen/photo_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_view">
+
+        <TextView
+            android:id="@+id/tag_type_prompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tag_type"
+            app:layout_constraintBottom_toBottomOf="@id/toggle_tag_type"
+            app:layout_constraintEnd_toStartOf="@id/toggle_tag_type"
+            app:layout_constraintTop_toTopOf="@id/toggle_tag_type" />
+
+        <ToggleButton
+            android:id="@+id/toggle_tag_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOff="@string/search_option_or"
+            android:textOn="@string/search_option_and"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/photo_recycler"
         android:layout_width="match_parent"
@@ -27,5 +57,5 @@
         android:layout_marginTop="@dimen/photo_margin"
         android:layout_marginEnd="@dimen/photo_margin"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_view" />
+        app:layout_constraintTop_toBottomOf="@id/search_options" />
 </androidx.constraintlayout.widget.ConstraintLayout>

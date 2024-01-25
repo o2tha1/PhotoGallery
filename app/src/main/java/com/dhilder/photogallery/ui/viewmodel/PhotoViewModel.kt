@@ -18,8 +18,8 @@ class PhotoViewModel @Inject constructor(private val photosRepository: PhotosRep
     val list = MutableLiveData<PhotosResponse>()
     var info = MutableLiveData<PhotoInfoResponse>()
 
-    suspend fun getPhotos(tags: String) {
-        val response = photosRepository.getPhotos(tags)
+    suspend fun getPhotos(tags: String, tagMode: String) {
+        val response = photosRepository.getPhotos(tags, tagMode)
         response.enqueue(object : Callback<PhotosResponse> {
             override fun onResponse(
                 call: Call<PhotosResponse>,

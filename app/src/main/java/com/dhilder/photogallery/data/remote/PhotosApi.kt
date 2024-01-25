@@ -13,6 +13,7 @@ interface PhotosApi {
         @Query("api_key") apiKey: String,
         @Query("format") format: String,
         @Query("tags") tags: String,
+        @Query("tag_mode") tagMode: String,
         @Query("extras") extras: String,
         @Query("nojsoncallback") noJsonCallback: Int
     ): Call<PhotosResponse>

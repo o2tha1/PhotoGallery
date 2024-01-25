@@ -8,4 +8,8 @@
 
     <string name="content_description_photo">The image returned from the search</string>
     <string name="content_description_user_icon">The user icon of the image uploader</string>
+
+    <string name="tag_type">Tag behaviour: </string>
+    <string name="search_option_and">AND</string>
+    <string name="search_option_or">OR</string>
 </resources>

@@ -6,11 +6,13 @@ import javax.inject.Inject
 
 class PhotosRepositoryImpl @Inject constructor(private val photosApi: PhotosApi) :
     PhotosRepository {
-    override suspend fun getPhotos(tags: String) = photosApi.getPhotos(
+
+    override suspend fun getPhotos(tags: String, tagMode: String) = photosApi.getPhotos(
         METHOD_SEARCH,
         API_KEY,
         FORMAT,
         tags,
+        tagMode,
         EXTRAS_SEARCH,
         NO_JSON_CALLBACK
     )

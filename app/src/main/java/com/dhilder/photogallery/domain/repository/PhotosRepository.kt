@@ -5,7 +5,7 @@ import com.dhilder.photogallery.domain.model.PhotosResponse
 import retrofit2.Call
 
 interface PhotosRepository {
-    suspend fun getPhotos(tags: String): Call<PhotosResponse>
+    suspend fun getPhotos(tags: String, tagMode: String): Call<PhotosResponse>
 
     suspend fun getPhotoInfo(photoId: String): Call<PhotoInfoResponse>
 }
