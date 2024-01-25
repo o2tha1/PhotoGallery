@@ -103,6 +103,7 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
                 viewModel.getUserId(searchText)
             }
         }
+        hideDefaultUi()
     }
 
     private fun setUpRecyclerView() {
@@ -151,10 +152,8 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
 
     private fun setUserIdObserver() {
         viewModel.user.observe(this) { response ->
-            lifecycleScope.launch {
-                if (response.user != null) {
-                    viewModel.getPhotosByUserId(response.user.nsid)
-                }
+            if (response.user != null) {
+                getPhotosByUser(response.user.nsid)
             }
         }
     }
@@ -163,6 +162,10 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
         if (intent.getBooleanExtra(SHOULD_USER_SEARCH, false)) {
             val owner = intent.getStringExtra(OWNER) ?: return
             onUserClick(owner)
+        } else {
+            lifecycleScope.launch {
+                viewModel.getPhotosByInteresting()
+            }
         }
     }
 
@@ -174,11 +177,21 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
     }
 
     override fun onUserClick(owner: String) {
+        binding.searchView.setQuery("", false)
+        binding.searchView.queryHint = owner
+        getPhotosByUser(owner)
+    }
+
+    private fun getPhotosByUser(user: String) {
         lifecycleScope.launch {
-            binding.searchView.setQuery("", false)
-            binding.searchView.queryHint = owner
-            viewModel.getPhotosByUserId(owner)
+            viewModel.getPhotosByUserId(user)
+            hideDefaultUi()
         }
+    }
+
+    private fun hideDefaultUi() {
+        binding.defaultTitle.visibility = View.GONE
+        binding.defaultPrompt.visibility = View.GONE
     }
 
     companion object {

@@ -10,9 +10,8 @@
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/photo_margin"
+        android:layout_marginHorizontal="@dimen/photo_margin"
         android:layout_marginTop="@dimen/photo_margin"
-        android:layout_marginEnd="@dimen/photo_margin"
         app:autoShowKeyboard="true"
         app:defaultQueryHint="@string/search_prompt"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,9 +22,8 @@
         android:id="@+id/search_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/photo_margin"
+        android:layout_marginHorizontal="@dimen/photo_margin"
         android:layout_marginTop="@dimen/photo_margin"
-        android:layout_marginEnd="@dimen/photo_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/search_view">
@@ -67,6 +65,31 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <TextView
+        android:id="@+id/default_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/details_margin"
+        android:layout_marginTop="@dimen/details_margin"
+        android:text="@string/default_title"
+        android:textSize="@dimen/text_size_lg"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_options" />
+
+    <TextView
+        android:id="@+id/default_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/details_margin"
+        android:layout_marginTop="@dimen/photo_margin"
+        android:text="@string/default_prompt"
+        android:textSize="@dimen/text_size_sm"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/default_title" />
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/photo_recycler"
         android:layout_width="match_parent"
@@ -75,5 +98,5 @@
         android:layout_marginTop="@dimen/photo_margin"
         android:layout_marginEnd="@dimen/photo_margin"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_options" />
+        app:layout_constraintTop_toBottomOf="@id/default_prompt" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -84,6 +84,22 @@ class PhotoViewModel @Inject constructor(private val photosRepository: PhotosRep
         })
     }
 
+    suspend fun getPhotosByInteresting() {
+        val response = photosRepository.getPhotosByInteresting()
+        response.enqueue(object : Callback<PhotosResponse> {
+            override fun onResponse(
+                call: Call<PhotosResponse>,
+                response: Response<PhotosResponse>
+            ) {
+                list.postValue(response.body())
+            }
+
+            override fun onFailure(call: Call<PhotosResponse>, t: Throwable) {
+                Log.w(TAG, t)
+            }
+        })
+    }
+
     companion object {
         private const val TAG = "PhotoViewModel"
     }

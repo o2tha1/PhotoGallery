@@ -13,4 +13,6 @@ interface PhotosRepository {
     suspend fun getPhotoInfo(photoId: String): Call<PhotoInfoResponse>
 
     suspend fun getUserId(username: String): Call<UserIdResponse>
+
+    suspend fun getPhotosByInteresting(): Call<PhotosResponse>
 }

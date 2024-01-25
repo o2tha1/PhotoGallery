@@ -1,7 +1,7 @@
 package com.dhilder.photogallery.domain.model
 
 data class UserIdResponse(
-    val user: User
+    val user: User?
 )
 
 data class User(

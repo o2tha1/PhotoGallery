@@ -46,4 +46,13 @@ interface PhotosApi {
         @Query("username") username: String,
         @Query("nojsoncallback") noJsonCallback: Int
     ): Call<UserIdResponse>
+
+    @GET("rest")
+    fun getPhotosByInteresting(
+        @Query("method") method: String,
+        @Query("api_key") apiKey: String,
+        @Query("format") format: String,
+        @Query("extras") extras: String,
+        @Query("nojsoncallback") noJsonCallback: Int
+    ): Call<PhotosResponse>
 }

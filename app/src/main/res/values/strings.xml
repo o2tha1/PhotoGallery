@@ -15,4 +15,7 @@
     <string name="search_type">Search by: </string>
     <string name="search_option_tag">tag</string>
     <string name="search_option_user">user</string>
+
+    <string name="default_title">Interesting Photos</string>
+    <string name="default_prompt">Try searching for more or tapping a user to get more relevant photos</string>
 </resources>

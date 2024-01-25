@@ -1,7 +1,7 @@
 package com.dhilder.photogallery.domain.model
 
 data class PhotosResponse(
-    val photos: Photos
+    val photos: Photos?
 )
 
 data class Photos(

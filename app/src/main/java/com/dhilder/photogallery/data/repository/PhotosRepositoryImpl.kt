@@ -42,10 +42,19 @@ class PhotosRepositoryImpl @Inject constructor(private val photosApi: PhotosApi)
         NO_JSON_CALLBACK
     )
 
+    override suspend fun getPhotosByInteresting() = photosApi.getPhotosByInteresting(
+        METHOD_GET_INTERESTING,
+        API_KEY,
+        FORMAT,
+        EXTRAS_SEARCH,
+        NO_JSON_CALLBACK
+    )
+
     companion object {
         private const val METHOD_SEARCH = "flickr.photos.search"
         private const val METHOD_GET_INFO = "flickr.photos.getInfo"
         private const val METHOD_FIND_BY_USERNAME = "flickr.people.findByUsername"
+        private const val METHOD_GET_INTERESTING = "flickr.interestingness.getList"
         private const val API_KEY = "af33688f970958902ff4ecad2ef77b6b"
         private const val FORMAT = "json"
         private const val EXTRAS_SEARCH = "tags, url_l"
