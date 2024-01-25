@@ -2,6 +2,7 @@ package com.dhilder.photogallery
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
     private val viewModel: PhotoViewModel by viewModels()
     private var lastClickedPhoto: PhotoMetadata? = null
     private var tagMode = TagMode.OR
+    private var searchMode = SearchMode.TAG
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,12 +35,33 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
         setContentView(binding.root)
 
         setTagMode(binding.toggleTagType.isChecked)
+        setSearchMode(binding.toggleSearchType.isChecked)
 
+        setTagModeVisibility()
         setTagModeListener()
         setSearchInputListener()
         setUpRecyclerView()
         setPhotoListObserver()
         setPhotoInfoObserver()
+        setUserIdObserver()
+    }
+
+    private fun setTagModeVisibility() {
+        binding.toggleSearchType.setOnCheckedChangeListener { _, isSearchByUser ->
+            if (isSearchByUser) {
+                binding.tagTypePrompt.visibility = View.INVISIBLE
+                binding.toggleTagType.visibility = View.INVISIBLE
+            } else {
+                binding.tagTypePrompt.visibility = View.VISIBLE
+                binding.toggleTagType.visibility = View.VISIBLE
+            }
+            setSearchMode(isSearchByUser)
+            refreshSearch()
+        }
+    }
+
+    private fun setSearchMode(isSearchByUser: Boolean) {
+        searchMode = if (isSearchByUser) SearchMode.USER_ID else SearchMode.TAG
     }
 
     private fun setTagModeListener() {
@@ -73,7 +96,11 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
 
     private fun getPhotos(searchText: String) {
         lifecycleScope.launch {
-            viewModel.getPhotos(searchText, tagMode.value)
+            if (searchMode == SearchMode.TAG) {
+                viewModel.getPhotosByTag(searchText, tagMode.value)
+            } else {
+                viewModel.getUserId(searchText)
+            }
         }
     }
 
@@ -119,6 +146,14 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
         return dateTemplate.format(datePosted)
     }
 
+    private fun setUserIdObserver() {
+        viewModel.user.observe(this) { response ->
+            lifecycleScope.launch {
+                viewModel.getPhotosByUserId(response.user.nsid)
+            }
+        }
+    }
+
     override fun onImageClick(metadata: PhotoMetadata) {
         lifecycleScope.launch {
             lastClickedPhoto = metadata
@@ -130,6 +165,11 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
         private enum class TagMode(val value: String) {
             AND("all"),
             OR("any")
+        }
+
+        private enum class SearchMode() {
+            TAG,
+            USER_ID
         }
 
         const val TITLE = "title"

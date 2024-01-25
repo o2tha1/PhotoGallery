@@ -12,4 +12,7 @@
     <string name="tag_type">Tag behaviour: </string>
     <string name="search_option_and">AND</string>
     <string name="search_option_or">OR</string>
+    <string name="search_type">Search by: </string>
+    <string name="search_option_tag">tag</string>
+    <string name="search_option_user">user</string>
 </resources>

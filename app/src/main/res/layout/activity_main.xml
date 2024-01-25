@@ -31,6 +31,24 @@
         app:layout_constraintTop_toBottomOf="@id/search_view">
 
         <TextView
+            android:id="@+id/search_type_prompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search_type"
+            app:layout_constraintBottom_toBottomOf="@id/toggle_search_type"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/toggle_search_type" />
+
+        <ToggleButton
+            android:id="@+id/toggle_search_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOff="@string/search_option_tag"
+            android:textOn="@string/search_option_user"
+            app:layout_constraintStart_toEndOf="@id/search_type_prompt"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
             android:id="@+id/tag_type_prompt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
