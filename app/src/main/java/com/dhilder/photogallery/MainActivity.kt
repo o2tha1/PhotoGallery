@@ -19,7 +19,7 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
+class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
     private lateinit var binding: ActivityMainBinding
 
     private var adapter = PhotoAdapter(emptyList(), this)
@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
         setPhotoListObserver()
         setPhotoInfoObserver()
         setUserIdObserver()
+        checkLaunchBehaviour()
     }
 
     private fun setTagModeVisibility() {
@@ -124,8 +125,10 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
             val photoInfo = response.photo
             val photoMetadata = lastClickedPhoto
 
+            // TODO: Improve this section; i.e. pass just the ID and use that to fetch the rest
             val intent = Intent(this, DetailsActivity::class.java)
             if (photoMetadata != null) {
+                intent.putExtra(OWNER, photoMetadata.owner)
                 intent.putExtra(TITLE, photoMetadata.title)
                 intent.putExtra(URL_L, photoMetadata.url_l)
                 intent.putExtra(BUDDY_ICONS, photoMetadata.getBuddyIcons())
@@ -149,8 +152,17 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
     private fun setUserIdObserver() {
         viewModel.user.observe(this) { response ->
             lifecycleScope.launch {
-                viewModel.getPhotosByUserId(response.user.nsid)
+                if (response.user != null) {
+                    viewModel.getPhotosByUserId(response.user.nsid)
+                }
             }
+        }
+    }
+
+    private fun checkLaunchBehaviour() {
+        if (intent.getBooleanExtra(SHOULD_USER_SEARCH, false)) {
+            val owner = intent.getStringExtra(OWNER) ?: return
+            onUserClick(owner)
         }
     }
 
@@ -161,24 +173,34 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnImageClickListener {
         }
     }
 
+    override fun onUserClick(owner: String) {
+        lifecycleScope.launch {
+            binding.searchView.setQuery("", false)
+            binding.searchView.queryHint = owner
+            viewModel.getPhotosByUserId(owner)
+        }
+    }
+
     companion object {
         private enum class TagMode(val value: String) {
             AND("all"),
             OR("any")
         }
 
-        private enum class SearchMode() {
+        private enum class SearchMode {
             TAG,
             USER_ID
         }
 
         const val TITLE = "title"
         const val URL_L = "url_l"
+        const val OWNER = "owner"
         const val OWNER_NAME = "owner_name"
         const val BUDDY_ICONS = "buddy_icons"
         const val DESCRIPTION = "description"
         const val DATE_UPLOAD = "date_upload"
         const val DATE_TAKEN = "date_taken"
         const val TAGS = "tags"
+        const val SHOULD_USER_SEARCH = "should_user_search"
     }
 }

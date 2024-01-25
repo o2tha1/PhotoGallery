@@ -10,7 +10,7 @@ import com.squareup.picasso.Picasso
 
 class PhotoAdapter(
     private val metadataList: List<PhotoMetadata>,
-    private val onImageClickListener: OnImageClickListener
+    private val onClickListener: OnClickListener
 ) : RecyclerView.Adapter<PhotoAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoAdapter.ViewHolder {
@@ -36,6 +36,12 @@ class PhotoAdapter(
             Picasso.get().load(itemViewModel.getBuddyIcons()).into(binding.userIcon)
 
             binding.userId.text = itemViewModel.owner
+            setTags(itemViewModel)
+
+            setOnClickListeners(itemViewModel)
+        }
+
+        private fun setTags(itemViewModel: PhotoMetadata) {
             if (itemViewModel.tags.isNotEmpty()) {
                 binding.imageTag.text = binding.root.resources.getString(
                     R.string.tags,
@@ -45,13 +51,22 @@ class PhotoAdapter(
             } else {
                 binding.imageTag.visibility = View.GONE
             }
+        }
+
+        private fun setOnClickListeners(itemViewModel: PhotoMetadata) {
             binding.imageView.setOnClickListener {
-                onImageClickListener.onImageClick(itemViewModel)
+                onClickListener.onImageClick(itemViewModel)
+            }
+
+            binding.userLayout.setOnClickListener {
+                onClickListener.onUserClick(itemViewModel.owner)
             }
         }
     }
 
-    interface OnImageClickListener {
+    interface OnClickListener {
         fun onImageClick(metadata: PhotoMetadata)
+
+        fun onUserClick(owner: String)
     }
 }

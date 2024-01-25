@@ -1,5 +1,6 @@
 package com.dhilder.photogallery
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +18,7 @@ class DetailsActivity : AppCompatActivity() {
 
         setTitle()
         setUserId()
+        setUserOnClick()
         setDescription()
         setUploadDate()
         setTakenDate()
@@ -33,6 +35,19 @@ class DetailsActivity : AppCompatActivity() {
     private fun setUserId() {
         val ownerName = intent.getStringExtra(MainActivity.OWNER_NAME)
         binding.userId.text = ownerName
+    }
+
+    private fun setUserOnClick() {
+        val owner = intent.getStringExtra(MainActivity.OWNER)
+
+        binding.userLayout.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra(MainActivity.SHOULD_USER_SEARCH, true)
+            intent.putExtra(MainActivity.OWNER, owner)
+            finish()
+            startActivity(intent)
+        }
+
     }
 
     private fun setDescription() {
