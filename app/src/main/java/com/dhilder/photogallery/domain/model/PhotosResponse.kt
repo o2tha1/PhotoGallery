@@ -15,6 +15,7 @@ data class PhotoMetadata(
     val server: String,
     val farm: Int,
     val title: String,
+    val tags: String,
     val url_l: String,
 ) {
     fun getBuddyIcons(): String {

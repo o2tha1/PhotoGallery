@@ -1,6 +1,7 @@
 package com.dhilder.photogallery
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.dhilder.photogallery.databinding.PhotoItemBinding
@@ -35,6 +36,15 @@ class PhotoAdapter(
             Picasso.get().load(itemViewModel.getBuddyIcons()).into(binding.userIcon)
 
             binding.userId.text = itemViewModel.owner
+            if (itemViewModel.tags.isNotEmpty()) {
+                binding.imageTag.text = binding.root.resources.getString(
+                    R.string.tags,
+                    itemViewModel.tags
+                )
+                binding.imageTag.visibility = View.VISIBLE
+            } else {
+                binding.imageTag.visibility = View.GONE
+            }
             binding.imageView.setOnClickListener {
                 onImageClickListener.onImageClick(itemViewModel.url_l)
             }
