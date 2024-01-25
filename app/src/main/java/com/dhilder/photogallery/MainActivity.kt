@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                getPhotos(newText)
+                if (newText.isNotEmpty()) getPhotos(newText) else getInterestingPhotos()
                 return false
             }
         })
@@ -172,9 +172,15 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
             val owner = intent.getStringExtra(OWNER) ?: return
             onUserClick(owner)
         } else {
-            lifecycleScope.launch {
-                viewModel.getPhotosByInteresting()
-            }
+            getInterestingPhotos()
+        }
+    }
+
+    private fun getInterestingPhotos() {
+        lifecycleScope.launch {
+            viewModel.getPhotosByInteresting()
+            binding.defaultTitle.visibility = View.VISIBLE
+            binding.searchView.queryHint = ""
         }
     }
 
