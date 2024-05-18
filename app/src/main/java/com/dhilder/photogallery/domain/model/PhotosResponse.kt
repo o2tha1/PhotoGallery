@@ -16,7 +16,7 @@ data class PhotoMetadata(
     val farm: Int,
     val title: String,
     val tags: String,
-    val url_l: String,
+    val url_l: String
 ) {
     fun getBuddyIcons(): String {
         return "http://farm${farm}.staticflickr.com/${server}/buddyicons/${owner}.jpg"
