@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -25,7 +27,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 
 class DetailsActivity : ComponentActivity() {
 
@@ -37,6 +39,7 @@ class DetailsActivity : ComponentActivity() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 32.dp)
+                    .verticalScroll(state = rememberScrollState())
             ) {
                 ImageTitle()
                 ShareableImage()
@@ -82,8 +85,8 @@ class DetailsActivity : ComponentActivity() {
             shape = RoundedCornerShape(15.dp)
         ) {
             Box {
-                Image(
-                    painter = rememberAsyncImagePainter(url),
+                AsyncImage(
+                    model = url,
                     contentDescription = resources.getString(
                         R.string.content_description_image,
                         title
@@ -129,8 +132,8 @@ class DetailsActivity : ComponentActivity() {
 
         Card(shape = RoundedCornerShape(30.dp)) {
             Box {
-                Image(
-                    painter = rememberAsyncImagePainter(buddyIcons),
+                AsyncImage(
+                    model = buddyIcons,
                     contentDescription = "",
                     modifier = Modifier
                         .size(45.dp)
