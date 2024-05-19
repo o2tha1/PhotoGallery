@@ -20,90 +20,11 @@
         app:queryHint="@string/search_prompt"
         app:searchIcon="@drawable/ic_search" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/search_options"
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/compose_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/photo_margin"
-        android:layout_marginTop="@dimen/photo_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_view">
-
-        <TextView
-            android:id="@+id/search_type_prompt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/search_type"
-            app:layout_constraintBottom_toBottomOf="@id/toggle_search_type"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/toggle_search_type" />
-
-        <ToggleButton
-            android:id="@+id/toggle_search_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textOff="@string/search_option_tag"
-            android:textOn="@string/search_option_user"
-            app:layout_constraintStart_toEndOf="@id/search_type_prompt"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tag_type_prompt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/tag_type"
-            app:layout_constraintBottom_toBottomOf="@id/toggle_tag_type"
-            app:layout_constraintEnd_toStartOf="@id/toggle_tag_type"
-            app:layout_constraintTop_toTopOf="@id/toggle_tag_type" />
-
-        <ToggleButton
-            android:id="@+id/toggle_tag_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textOff="@string/search_option_or"
-            android:textOn="@string/search_option_and"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <TextView
-        android:id="@+id/default_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/details_margin"
-        android:layout_marginTop="@dimen/details_margin"
-        android:text="@string/default_title"
-        android:textSize="@dimen/text_size_lg"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_options" />
-
-    <TextView
-        android:id="@+id/default_prompt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/details_margin"
-        android:layout_marginTop="@dimen/photo_margin"
-        android:text="@string/default_prompt"
-        android:textSize="@dimen/text_size_sm"
-        android:textStyle="italic"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/default_title" />
-
-    <TextView
-        android:id="@+id/no_results_prompt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/details_margin"
-        android:layout_marginTop="@dimen/details_margin"
-        android:gravity="center_horizontal"
-        android:text="@string/no_results_prompt"
-        android:textSize="@dimen/text_size_sm"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_options" />
+        app:layout_constraintTop_toBottomOf="@id/search_view" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/photo_recycler"
@@ -113,5 +34,5 @@
         android:layout_marginTop="@dimen/photo_margin"
         android:layout_marginEnd="@dimen/photo_margin"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/default_prompt" />
+        app:layout_constraintTop_toBottomOf="@id/compose_view" />
 </androidx.constraintlayout.widget.ConstraintLayout>

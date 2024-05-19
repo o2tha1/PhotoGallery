@@ -2,10 +2,33 @@ package com.dhilder.photogallery
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import android.widget.CompoundButton
+import android.widget.ToggleButton
+import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dhilder.photogallery.databinding.ActivityMainBinding
@@ -19,7 +42,7 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
+class MainActivity : ComponentActivity(), PhotoAdapter.OnClickListener {
     private lateinit var binding: ActivityMainBinding
 
     private var adapter = PhotoAdapter(emptyList(), this)
@@ -27,6 +50,9 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
     private var lastClickedPhoto: PhotoMetadata? = null
     private var tagMode = TagMode.OR
     private var searchMode = SearchMode.TAG
+    private var shouldShowNoResultsPrompt = mutableStateOf(false)
+    private var shouldShowIntroTitle = mutableStateOf(true)
+    private var shouldShowIntroText = mutableStateOf(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +60,17 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setTagMode(binding.toggleTagType.isChecked)
-        setSearchMode(binding.toggleSearchType.isChecked)
+        binding.composeView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                Column {
+                    SearchOptions()
+                    IntroText()
+                    NoResultsText()
+                }
+            }
+        }
 
-        setTagModeVisibility()
-        setTagModeListener()
         setSearchInputListener()
         setUpRecyclerView()
         setPhotoListObserver()
@@ -47,29 +79,139 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
         checkLaunchBehaviour()
     }
 
-    private fun setTagModeVisibility() {
-        binding.toggleSearchType.setOnCheckedChangeListener { _, isSearchByUser ->
-            if (isSearchByUser) {
-                binding.tagTypePrompt.visibility = View.INVISIBLE
-                binding.toggleTagType.visibility = View.INVISIBLE
-            } else {
-                binding.tagTypePrompt.visibility = View.VISIBLE
-                binding.toggleTagType.visibility = View.VISIBLE
+
+    @Composable
+    private fun SearchOptions() {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            var isSearchByUser by remember {
+                mutableStateOf(false)
             }
-            setSearchMode(isSearchByUser)
-            refreshSearch()
+
+            SearchToggleOption(
+                prompt = resources.getString(R.string.search_type),
+                textOff = resources.getString(R.string.search_option_tag),
+                textOn = resources.getString(R.string.search_option_user),
+                updateState = { isSearchByUser = it })
+
+            if (!isSearchByUser) {
+                TagToggleOption(
+                    prompt = resources.getString(R.string.tag_type),
+                    textOff = resources.getString(R.string.search_option_or),
+                    textOn = resources.getString(R.string.search_option_and)
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun SearchToggleOption(
+        prompt: String,
+        textOff: String,
+        textOn: String,
+        updateState: (Boolean) -> Unit
+    ) {
+        ToggleOption(
+            prompt = prompt,
+            textOff = textOff,
+            textOn = textOn,
+            listener = { _, isSearchByUser ->
+                updateState(isSearchByUser)
+                setSearchMode(isSearchByUser)
+                refreshSearch()
+            })
+    }
+
+    @Composable
+    private fun TagToggleOption(prompt: String, textOff: String, textOn: String) {
+        ToggleOption(
+            prompt = prompt,
+            textOff = textOff,
+            textOn = textOn,
+            listener = { _, isExclusive ->
+                setTagMode(isExclusive)
+                refreshSearch()
+            })
+    }
+
+    @Composable
+    private fun ToggleOption(
+        prompt: String,
+        textOff: String,
+        textOn: String,
+        listener: CompoundButton.OnCheckedChangeListener
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = prompt,
+                color = Color.White
+            )
+            AndroidView(factory = { ToggleButton(it) }) { toggleButton ->
+                toggleButton.apply {
+                    this.textOff = textOff
+                    this.textOn = textOn
+                    isChecked = isChecked
+                    setOnCheckedChangeListener(listener)
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun IntroText() {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
+        ) {
+            if (shouldShowIntroTitle.value) {
+                Text(
+                    text = resources.getString(R.string.default_title),
+                    modifier = Modifier.padding(top = 32.dp),
+                    style = TextStyle(
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+            if (shouldShowIntroText.value) {
+                Text(
+                    text = resources.getString(R.string.default_prompt),
+                    modifier = Modifier.padding(top = 16.dp),
+                    style = TextStyle(
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontStyle = FontStyle.Italic
+                    )
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun NoResultsText() {
+        if (shouldShowNoResultsPrompt.value) {
+            Text(
+                text = resources.getString(R.string.no_results_prompt),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 32.dp, top = 32.dp, end = 32.dp),
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center
+                )
+            )
         }
     }
 
     private fun setSearchMode(isSearchByUser: Boolean) {
         searchMode = if (isSearchByUser) SearchMode.USER_ID else SearchMode.TAG
-    }
-
-    private fun setTagModeListener() {
-        binding.toggleTagType.setOnCheckedChangeListener { _, isExclusive ->
-            setTagMode(isExclusive)
-            refreshSearch()
-        }
     }
 
     private fun setTagMode(isExclusive: Boolean) {
@@ -117,16 +259,8 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
             if (getPhotoResponse.photos != null) {
                 adapter = PhotoAdapter(getPhotoResponse.photos.photo, this)
                 binding.photoRecycler.adapter = adapter
-                showNoResultsPrompt(adapter.itemCount == 0)
+                shouldShowNoResultsPrompt.value = adapter.itemCount == 0
             }
-        }
-    }
-
-    private fun showNoResultsPrompt(shouldShow: Boolean) {
-        if (shouldShow) {
-            binding.noResultsPrompt.visibility = View.VISIBLE
-        } else {
-            binding.noResultsPrompt.visibility = View.GONE
         }
     }
 
@@ -179,7 +313,7 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
     private fun getInterestingPhotos() {
         lifecycleScope.launch {
             viewModel.getPhotosByInteresting()
-            binding.defaultTitle.visibility = View.VISIBLE
+            shouldShowIntroTitle.value = true
             binding.searchView.queryHint = ""
         }
     }
@@ -205,8 +339,8 @@ class MainActivity : AppCompatActivity(), PhotoAdapter.OnClickListener {
     }
 
     private fun hideDefaultUi() {
-        binding.defaultTitle.visibility = View.GONE
-        binding.defaultPrompt.visibility = View.GONE
+        shouldShowIntroTitle.value = false
+        shouldShowIntroText.value = false
     }
 
     companion object {
