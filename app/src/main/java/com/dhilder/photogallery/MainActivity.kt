@@ -7,13 +7,21 @@ import android.widget.ToggleButton
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -30,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
+import coil.compose.AsyncImage
 import com.dhilder.photogallery.databinding.ActivityMainBinding
 import com.dhilder.photogallery.domain.model.PhotoMetadata
 import com.dhilder.photogallery.ui.viewmodel.PhotoViewModel
@@ -42,10 +51,10 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity(), PhotoAdapter.OnClickListener {
+class MainActivity : ComponentActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    private var adapter = PhotoAdapter(emptyList(), this)
+    private var metadataList: MutableState<List<PhotoMetadata>> = mutableStateOf(emptyList())
     private val viewModel: PhotoViewModel by viewModels()
     private var lastClickedPhoto: PhotoMetadata? = null
     private var tagMode = TagMode.OR
@@ -67,18 +76,17 @@ class MainActivity : ComponentActivity(), PhotoAdapter.OnClickListener {
                     SearchOptions()
                     IntroText()
                     NoResultsText()
+                    PhotoList()
                 }
             }
         }
 
         setSearchInputListener()
-        setUpRecyclerView()
         setPhotoListObserver()
         setPhotoInfoObserver()
         setUserIdObserver()
         checkLaunchBehaviour()
     }
-
 
     @Composable
     private fun SearchOptions() {
@@ -210,6 +218,118 @@ class MainActivity : ComponentActivity(), PhotoAdapter.OnClickListener {
         }
     }
 
+    @Composable
+    private fun PhotoList() {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+        ) {
+            itemsIndexed(items = metadataList.value) { _, photoMetadata ->
+                RoundedPhoto(photoMetadata)
+                UserInfo(photoMetadata.getBuddyIcons(), photoMetadata.owner)
+                ImageTags(photoMetadata.tags)
+            }
+        }
+    }
+
+    @Composable
+    private fun RoundedPhoto(photoMetadata: PhotoMetadata) {
+        val url = photoMetadata.url_l
+        if (url.isEmpty()) {
+            return
+        }
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp),
+            shape = RoundedCornerShape(15.dp)
+        ) {
+            Box {
+                AsyncImage(
+                    model = url,
+                    contentDescription = resources.getString(
+                        R.string.content_description_image,
+                        photoMetadata.title
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onImageClick(photoMetadata) },
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun UserInfo(buddyIcons: String, owner: String) {
+        Row(
+            modifier = Modifier.padding(start = 32.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            UserIcon(buddyIcons, owner)
+            Username(owner)
+        }
+    }
+
+    @Composable
+    private fun UserIcon(buddyIcons: String, owner: String) {
+        if (buddyIcons.isEmpty()) {
+            return
+        }
+
+        Card(shape = RoundedCornerShape(30.dp)) {
+            Box {
+                AsyncImage(
+                    model = buddyIcons,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable { onUserClick(owner) },
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun Username(owner: String) {
+        if (owner.isEmpty()) {
+            return
+        }
+
+        Text(
+            text = owner,
+            modifier = Modifier
+                .padding(start = 8.dp)
+                .clickable { onUserClick(owner) },
+            style = TextStyle(
+                color = Color.Blue,
+                fontSize = 16.sp
+            )
+        )
+    }
+
+    @Composable
+    private fun ImageTags(tags: String) {
+        if (tags.isEmpty()) {
+            return
+        }
+
+        Text(
+            text = getString(R.string.tags, tags),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+            style = TextStyle(
+                color = Color.White,
+                fontSize = 16.sp,
+                fontStyle = FontStyle.Italic
+            )
+        )
+    }
+
     private fun setSearchMode(isSearchByUser: Boolean) {
         searchMode = if (isSearchByUser) SearchMode.USER_ID else SearchMode.TAG
     }
@@ -248,18 +368,11 @@ class MainActivity : ComponentActivity(), PhotoAdapter.OnClickListener {
         hideDefaultUi()
     }
 
-    private fun setUpRecyclerView() {
-        val layoutManager = LinearLayoutManager(this)
-        layoutManager.orientation = LinearLayoutManager.VERTICAL
-        binding.photoRecycler.layoutManager = layoutManager
-    }
-
     private fun setPhotoListObserver() {
         viewModel.list.observe(this) { getPhotoResponse ->
             if (getPhotoResponse.photos != null) {
-                adapter = PhotoAdapter(getPhotoResponse.photos.photo, this)
-                binding.photoRecycler.adapter = adapter
-                shouldShowNoResultsPrompt.value = adapter.itemCount == 0
+                metadataList.value = getPhotoResponse.photos.photo
+                shouldShowNoResultsPrompt.value = metadataList.value.isEmpty()
             }
         }
     }
@@ -318,14 +431,14 @@ class MainActivity : ComponentActivity(), PhotoAdapter.OnClickListener {
         }
     }
 
-    override fun onImageClick(metadata: PhotoMetadata) {
+    private fun onImageClick(metadata: PhotoMetadata) {
         lifecycleScope.launch {
             lastClickedPhoto = metadata
             viewModel.getPhotoInfo(metadata.id)
         }
     }
 
-    override fun onUserClick(owner: String) {
+    private fun onUserClick(owner: String) {
         binding.searchView.setQuery("", false)
         binding.searchView.queryHint = owner
         getPhotosByUser(owner)
