@@ -72,11 +72,11 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     // Jetpack Compose
-    implementation("androidx.compose.ui:ui:1.6.6")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.6.6")
-    implementation("androidx.compose.material:material:1.6.6")
+    implementation("androidx.compose.ui:ui:1.6.7")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.6.7")
+    implementation("androidx.compose.material:material:1.6.7")
     implementation("androidx.activity:activity-compose:1.9.0")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.6.6")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.6.7")
 
     // Image loading
     implementation("io.coil-kt:coil-compose:2.6.0")
